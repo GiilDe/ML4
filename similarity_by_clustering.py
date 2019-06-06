@@ -5,7 +5,7 @@ import numpy as np
 
 
 def normalize(v):
-    norm = np.linalg.norm(v)
+    norm = np.linalg.norm(v, ord=1)
     if norm == 0:
        return v
     return v / norm
@@ -41,8 +41,8 @@ def get_similarity(party1, party2, cluster_labels, df: pd.DataFrame):
     return similarity
 
 
-train_X, train_Y, validation_X, validation_Y, test_X, test_Y = get_prepared_data()
-cluster_res = KMeans(n_clusters=16).fit(train_X)
+train_X, train_Y, validation_X, validation_Y, test_X, test_Y = get_prepared_data(save=False)
+cluster_res = KMeans(n_clusters=25).fit(train_X)
 cluster_labels = cluster_res.labels_
 train_X.insert(0, 'Vote', train_Y)
 
