@@ -2,6 +2,18 @@ from get_prepared_data import get_prepared_data
 from sklearn.cluster import KMeans
 import pandas as pd
 import numpy as np
+import scipy as sp
+
+
+def calc_sim(party1_cluster_hist, party2_cluster_hist):
+    # normalized1 = normalize(party1_cluster_nums)
+    # normalized2 = normalize(party2_cluster_nums)
+    # difference = np.linalg.norm(normalized1 - normalized2, ord=1) #diff is in [0, 2]
+    # similarity = 1 - difference/2 #simm is in [0, 1]
+
+    similarity, _ = sp.stats.pearsonr(party1_cluster_hist, party2_cluster_hist)
+
+    return similarity
 
 
 def normalize(v):
@@ -28,15 +40,11 @@ def get_similarity(party1, party2, cluster_labels, df: pd.DataFrame):
     df = df.reset_index()
     cluster_labels = pd.Series(cluster_labels)
     df['cluster_label'] = cluster_labels
-    party1_cluster_nums = np.array([get_party_in_cluster_num(party1, df, cluster) for cluster in range(N)])
-    party2_cluster_nums = np.array([get_party_in_cluster_num(party2, df, cluster) for cluster in range(N)])
 
-    normalized1 = normalize(party1_cluster_nums)
-    normalized2 = normalize(party2_cluster_nums)
-    difference = np.linalg.norm(normalized1-normalized2, ord=1)
-    if difference == 0:
-        difference = 1
-    similarity = 1/difference
+    party1_cluster_hist = np.array([get_party_in_cluster_num(party1, df, cluster) for cluster in range(N)])
+    party2_cluster_hist = np.array([get_party_in_cluster_num(party2, df, cluster) for cluster in range(N)])
+
+    similarity = calc_sim(party1_cluster_hist, party2_cluster_hist)
 
     return similarity
 
