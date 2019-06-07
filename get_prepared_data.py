@@ -21,7 +21,7 @@ def get_prepared_data(load=False, save=True):
         test_XY = pd.read_csv('test_XY')
     else:
         data = get_data()
-        # data = data.iloc[:, :300]
+        data = data.iloc[:, :300]
         data = to_numerical_data(data)
         train_X, train_Y, validation_X, validation_Y, test_X, test_Y = split_data(data)
         train_XY = X_Y_2_XY(train_X, train_Y)
