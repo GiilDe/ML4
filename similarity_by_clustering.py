@@ -52,16 +52,16 @@ def get_similarity(party1, party2, cluster_labels, df: pd.DataFrame):
 
     return similarity
 
-
-train_X, train_Y, validation_X, validation_Y, test_X, test_Y = get_prepared_data(save=False)
-
-
-# numerous clusters, look at similarities
-k_means = KMeans(n_clusters=20)
-cluster_res = k_means.fit(train_X)
-cluster_labels = k_means.fitpredict(test_X)
-test_X.insert(0, 'Vote', test_Y)
-
-parties_num = len(np.unique(train_X['Vote']))
-similarities = get_similarities(parties_num, get_similarity, cluster_labels, train_X)
-
+#
+# train_X, train_Y, validation_X, validation_Y, test_X, test_Y = get_prepared_data(save=False)
+#
+#
+# # numerous clusters, look at similarities
+# k_means = KMeans(n_clusters=20)
+# cluster_res = k_means.fit(train_X)
+# cluster_labels = k_means.fitpredict(test_X)
+# test_X.insert(0, 'Vote', test_Y)
+#
+# parties_num = len(np.unique(train_X['Vote']))
+# similarities = get_similarities(parties_num, get_similarity, cluster_labels, train_X)
+#
