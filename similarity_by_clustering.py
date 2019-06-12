@@ -3,16 +3,11 @@ from sklearn.cluster import KMeans
 import pandas as pd
 import numpy as np
 import scipy as sp
+from sklearn.model_selection import KFold
 
 
 def calc_sim(party1_cluster_hist, party2_cluster_hist):
-    # normalized1 = normalize(party1_cluster_nums)
-    # normalized2 = normalize(party2_cluster_nums)
-    # difference = np.linalg.norm(normalized1 - normalized2, ord=1) #diff is in [0, 2]
-    # similarity = 1 - difference/2 #simm is in [0, 1]
-
     similarity, _ = sp.stats.pearsonr(party1_cluster_hist, party2_cluster_hist)
-
     return similarity
 
 
@@ -35,6 +30,12 @@ def get_party_in_cluster_num(party, data_X, label_num):
     return len(data_X[(data_X['Vote'] == party) & (data_X['cluster_label'] == label_num)])
 
 
+def get_party_cluster_hist(party, cluster_labels, df: pd.DataFrame):
+    N = len(np.unique(cluster_labels))
+    party_cluster_hist = np.array([get_party_in_cluster_num(party, df, cluster) for cluster in range(N)])
+    return party_cluster_hist
+
+
 def get_similarity(party1, party2, cluster_labels, df: pd.DataFrame):
     N = len(np.unique(cluster_labels))
     df = df.reset_index()
@@ -50,9 +51,14 @@ def get_similarity(party1, party2, cluster_labels, df: pd.DataFrame):
 
 
 train_X, train_Y, validation_X, validation_Y, test_X, test_Y = get_prepared_data(save=False)
-cluster_res = KMeans(n_clusters=25).fit(train_X)
-cluster_labels = cluster_res.labels_
-train_X.insert(0, 'Vote', train_Y)
+
+
+# numerous clusters, look at similarities
+k_means = KMeans(n_clusters=20)
+cluster_res = k_means.fit(train_X)
+cluster_labels = k_means.fitpredict(test_X)
+test_X.insert(0, 'Vote', test_Y)
 
 parties_num = len(np.unique(train_X['Vote']))
 similarities = get_similarities(parties_num, get_similarity, cluster_labels, train_X)
+
