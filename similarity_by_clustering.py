@@ -26,13 +26,16 @@ def get_similarities(parties_num, get_similarity, cluster_labels, data_X: pd.Dat
     return parties_similarities
 
 
-def get_party_in_cluster_num(party, data_X, label_num):
-    return len(data_X[(data_X['Vote'] == party) & (data_X['cluster_label'] == label_num)])
+def get_party_in_cluster_num(party, data, label_num, cluster_labels):
+    if 'cluster_label' not in data.columns:
+        data['cluster_label'] = cluster_labels
+
+    return len(data[(data['Vote'] == party) & (data['cluster_label'] == label_num)])
 
 
 def get_party_cluster_hist(party, cluster_labels, df: pd.DataFrame):
     N = len(np.unique(cluster_labels))
-    party_cluster_hist = np.array([get_party_in_cluster_num(party, df, cluster) for cluster in range(N)])
+    party_cluster_hist = np.array([get_party_in_cluster_num(party, df, cluster, cluster_labels) for cluster in range(N)])
     return party_cluster_hist
 
 
