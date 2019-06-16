@@ -8,5 +8,5 @@ def coalition_score(coalition_, XY):
     opposition = XY[~XY['Vote'].isin(coalition_)]
     avg_coalition = np.average(coalition, axis=0)
     avg_opposition = np.average(opposition, axis=0)
-    avg_dist = np.average([np.linalg.norm(x - avg_coalition, ord=1) for x in coalition])
-    return np.linalg.norm(avg_coalition - avg_opposition, ord=1)/avg_dist
+    avg_dist = np.average([np.linalg.norm(x - avg_coalition, ord=2) for x in coalition])
+    return np.linalg.norm(avg_coalition - avg_opposition, ord=2)/avg_dist
