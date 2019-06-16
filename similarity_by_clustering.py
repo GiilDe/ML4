@@ -29,7 +29,6 @@ def get_similarities(parties_num, get_similarity, cluster_labels, data_X: pd.Dat
 def get_party_in_cluster_num(party, data, label_num, cluster_labels):
     if 'cluster_label' not in data.columns:
         data['cluster_label'] = cluster_labels
-
     return len(data[(data['Vote'] == party) & (data['cluster_label'] == label_num)])
 
 
