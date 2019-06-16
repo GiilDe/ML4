@@ -78,11 +78,10 @@ def build_coalition_from_similarity_matrix():
         most_similar_party_left = most_similar_parties(party)
         while not big_enough_coalition(coalition):
             coalition.append(next(most_similar_party_left))
-        coalition_score_ = f(coalition, X_Y_2_XY(test_X, test_Y))
+        coalition_score_ = f(coalition, X_Y_2_XY(X_to_split, Y_to_split))
         if coalition_score_ > best_coalition_score:
             best_coalition_score = coalition_score_
             best_coalition = coalition
     return best_coalition, best_coalition_score
 
 print(build_coalition_from_similarity_matrix())
-

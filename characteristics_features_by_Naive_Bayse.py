@@ -12,14 +12,14 @@ class characteristics_features_by_Naive_Bayse:
             NB.fit(X[column].to_numpy().reshape(-1, 1), Y)
             # min_val = column.min()
             # max_val = column.max()
-            party_index = 0
-            for party in set(Y.to_numpy()):
-                avg = X[column][Y == party].mean()
+            for val in np.linspace(X[column].min() * 1.1, X[column].max() * 0.9, 10):
                 # print(NB.predict_proba(np.array([[avg], [-100000000]]))[0])
-                proba = NB.predict_proba(np.array([[avg], [0]]))[0][party_index]
-                party_index += 1
-                if proba >= 0.3:
-                    print(list(X)[column_index] + ' is a characteristics features for party ', party)
+                probabilities = list(NB.predict_proba(np.array([[val], [0]]))[0])
+                index = 0
+                for proba in probabilities:
+                    if proba > 0.4:
+                        print(list(X)[column_index], ' with val ', '{:.2f}'.format(val), ' is a characteristics feature for party ', index, ' with probability: ', '{:.2f}'.format(proba))
+                    index += 1
             column_index += 1
 
 
