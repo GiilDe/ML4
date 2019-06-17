@@ -9,10 +9,10 @@ import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 
 
-def X_Y_2_XY(data_X: pd.DataFrame, data_Y: pd.DataFrame):
+def X_Y_2_XY(data_X: pd.DataFrame, data_Y: pd.DataFrame, deep=True):
     X_columns_list = data_X.columns.values
-    data_XY = data_X.copy()
-    data_Y = pd.DataFrame(data_Y.copy())
+    data_XY = data_X.copy(deep)
+    data_Y = pd.DataFrame(data_Y.copy(deep))
     data_Y = data_Y.set_index(data_X.index)
     data_XY = data_XY.assign(Vote=data_Y)
     new_columns_list = ['Vote']
@@ -60,7 +60,6 @@ def get_series_hist(series: Series):
         if value is not np.nan:
             values.add(value)
     return values
-
 
 
 # bad sample is a sample with nan in a categorial values
