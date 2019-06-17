@@ -60,28 +60,38 @@ def big_enough_coalition(parties_list):
     return len(coalition) >= len(test_X) * 0.51
 
 
-def most_similar_parties(party):
-    similarity_list = [(similarity_matrix[party][other_party] * similarity_matrix[other_party][party], other_party)
-                      for other_party in range(13) if other_party != party]
-    similarity_list.sort(reverse=True, key=lambda x: x[0])
-    # print(similarity_list)
-    for i in range(len(similarity_list)):
-        yield similarity_list[i][1]
+def most_similar_party(coalition):
+    assert len(coalition) == len(set(coalition))
+    similarity_list = np.zeros(13)
+    for party in coalition:
+        for other_party in set(range(13)) - set(coalition):
+            similarity_list[other_party] += similarity_matrix[party][other_party] + similarity_matrix[other_party][party]
 
+    return np.argmax(similarity_list)
+
+coa_opa_dist_list = []
+avg_dist_list = []
 
 def build_coalition_from_similarity_matrix():
-    # we will go through every party and will try to build a coalition with similar parties
     best_coalition_score = float('-inf')
-    best_coalition = []
+    best_coalition = list(range(13))
     for party in range(13):
         coalition = [party]
-        most_similar_party_left = most_similar_parties(party)
         while not big_enough_coalition(coalition):
-            coalition.append(next(most_similar_party_left))
+            coalition.append(most_similar_party(coalition))
         coalition_score_ = f(coalition, X_Y_2_XY(X_to_split, Y_to_split))
         if coalition_score_ > best_coalition_score:
             best_coalition_score = coalition_score_
-            best_coalition = coalition
+            best_coalition = coalition.copy()
+        while len(coalition) < 12:
+            coalition.append(most_similar_party(coalition))
+            coalition_score_ = f(coalition, X_Y_2_XY(X_to_split, Y_to_split))
+            if coalition_score_ > best_coalition_score:
+                best_coalition_score = coalition_score_
+                best_coalition = coalition.copy()
+
+    best_coalition.sort()
     return best_coalition, best_coalition_score
+
 
 print(build_coalition_from_similarity_matrix())
