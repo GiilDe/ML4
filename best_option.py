@@ -35,7 +35,7 @@ def best_option_ever():
             score = coalition_score(coalition, X_Y_2_XY(X_to_split, Y_to_split))
             if score > best_coalition_score:
                 best_coalition_score = score
-                best_coalition = coalition.copy()
+                best_coalition = coalition
     return best_coalition, best_coalition_score
 
 print(best_option_ever())

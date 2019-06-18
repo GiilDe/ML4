@@ -1,13 +1,11 @@
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
 import numpy as np
 import matplotlib.pyplot as plt
-from coalition_score import coalition_score as f
-from data_handling import X_Y_2_XY
 from sklearn.model_selection import cross_val_score
 import pandas as pd
 from get_prepared_data import get_prepared_data
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
-from sklearn.mixture import GaussianMixture
+from build_coalition_from_similarity_matrix import build_coalition_from_similarity_matrix
 
 
 class clf_similarity():
@@ -34,7 +32,6 @@ class clf_similarity():
         return similarity_matrix
 
 
-
 train_X, train_Y, validation_X, validation_Y, test_X, test_Y = get_prepared_data(load=True)
 X_to_split = pd.concat([train_X, validation_X])
 Y_to_split = pd.concat([train_Y, validation_Y])
@@ -52,46 +49,13 @@ print(best_clf)
 
 clf_similarity = clf_similarity(best_clf)
 clf_similarity.fit(train_X, train_Y)
-similarity_matrix = clf_similarity.get_similarity(validation_X, validation_Y)
+similarity_matrix = clf_similarity.get_similarity(X_to_split, Y_to_split)
+
+plt.imshow(similarity_matrix)
+plt.colorbar()
+plt.show()
 
 
-def big_enough_coalition(parties_list):
-    coalition = test_X[test_Y.isin(parties_list)]
-    return len(coalition) >= len(test_X) * 0.51
 
 
-def most_similar_party(coalition):
-    assert len(coalition) == len(set(coalition))
-    similarity_list = np.zeros(13)
-    for party in coalition:
-        for other_party in set(range(13)) - set(coalition):
-            similarity_list[other_party] += similarity_matrix[party][other_party] + similarity_matrix[other_party][party]
-
-    return np.argmax(similarity_list)
-
-coa_opa_dist_list = []
-avg_dist_list = []
-
-def build_coalition_from_similarity_matrix():
-    best_coalition_score = float('-inf')
-    best_coalition = list(range(13))
-    for party in range(13):
-        coalition = [party]
-        while not big_enough_coalition(coalition):
-            coalition.append(most_similar_party(coalition))
-        coalition_score_ = f(coalition, X_Y_2_XY(X_to_split, Y_to_split))
-        if coalition_score_ > best_coalition_score:
-            best_coalition_score = coalition_score_
-            best_coalition = coalition.copy()
-        while len(coalition) < 12:
-            coalition.append(most_similar_party(coalition))
-            coalition_score_ = f(coalition, X_Y_2_XY(X_to_split, Y_to_split))
-            if coalition_score_ > best_coalition_score:
-                best_coalition_score = coalition_score_
-                best_coalition = coalition.copy()
-
-    best_coalition.sort()
-    return best_coalition, best_coalition_score
-
-
-print(build_coalition_from_similarity_matrix())
+print(build_coalition_from_similarity_matrix(similarity_matrix, X_to_split, Y_to_split, test_X, test_Y))
